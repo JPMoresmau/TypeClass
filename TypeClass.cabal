@@ -17,7 +17,14 @@ executable TypeClass
   ghc-options:     -Wall -fno-warn-unused-do-bind
   extensions:      NamedFieldPuns
   build-depends:   
-                   base < 5, SDL, SDL-ttf, random, containers,
-                   filepath
+                   base < 5,
+                   SDL,
+                   SDL-ttf,
+                   random,
+                   containers,
+                   filepath,
+                   reactive-banana,
+                   reactive-banana-sdl >= 0.1.2
+  includes: SDL.h
 
   
