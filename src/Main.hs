@@ -74,26 +74,6 @@ setupNetwork es gd=do
         renderGraph bG bScreen
         return ()
 
---mainOld::IO()
---mainOld= do
---      gd<-initGraphics
---      r<-getStdGen
---      let gs=newChar $ GameState 0 100 2000 M.empty r 0 0 lives
---      tcks<-SDL.getTicks 
---      drawloop gs tcks gd
---      endGraphics gd
---      
---checkEvent :: GameState -> SDL.Event -> (GameState ,Bool)   
---checkEvent gs SDL.Quit = (gs,True)
---checkEvent gs@GameState{gs_shown,gs_score} (SDL.KeyDown ks)  = 
---                let c=toUpper $ SDL.symUnicode ks
---                in case c of 
---                        '+'->(speedup gs,False)
---                        _ ->((if M.member c gs_shown
---                                then gs{gs_shown=M.delete c gs_shown,gs_score=gs_score+1}
---                                else gs),False)
---checkEvent gs _    = (gs,False)
-
 updateGSOnKey :: SDL.Keysym -> GameState -> GameState
 updateGSOnKey ks gs@GameState{gs_shown,gs_score}=
                 let c=toUpper $ SDL.symUnicode ks
@@ -114,45 +94,6 @@ updateGS d gs1=let
              else gsMoved
        in gsNew
 
---drawloop :: GameState
---                                    -> Data.Word.Word32
---                                    -> GraphicsData
---                                    -> IO ()
---drawloop gs oldTicks gd@GraphicsData{gd_mainSurf}=do
---        e<-SDL.pollEvent
---        let (gs1,shouldStop)=checkEvent gs e
---        if shouldStop
---                then return ()
---                else if gs_lives gs1 > 0
---                 then do
---                        newTicks<-SDL.getTicks
---                        let d=newTicks-oldTicks
---                        -- update game state
---                        let mvs=(gs_moves gs1)+(fromIntegral d)
---                        let gsInc=changeif shouldSpeed  speedup  gs1{gs_moves=mvs}
---                        let gsMoved=changeif ((0 ==) . (mod mvs) . gs_movespeed) moveDown gsInc
---                        let alive=gs_lives gsMoved > 0
---                        SDL.fillRect gd_mainSurf (Just (SDL.Rect 0 0 width height)) (SDL.Pixel 0)
---                        let gsNew=if alive 
---                                then changeif ((0==) . (mod mvs) .gs_newspeed) newChar gsMoved
---                                else gsMoved
---                               
---                        -- draw screen
---                        SDL.fillRect gd_mainSurf (Just (SDL.Rect 0 0 width height)) (SDL.Pixel 0)
---                        if alive 
---                                then do
---                                        mapM_ (drawChar gd) (M.assocs $ gs_shown gsNew)
---                                        drawScore gd gsNew
---                                else do
---                                        gameOver gd gsNew
---                        SDL.flip gd_mainSurf                
---                             
---                        newTicks'<-SDL.getTicks
---                        let d'=newTicks'-oldTicks
---                        when (d'<16) (threadDelay (fromIntegral d'))
---                        drawloop gsNew newTicks gd   
---                else  drawloop gs oldTicks gd
-        
 data GraphicsData = GraphicsData {
         gd_font :: TTF.Font
         , gd_mainSurf :: SDL.Surface
@@ -201,39 +142,7 @@ moveDown gs@GameState{gs_shown,gs_lives}=let
         d'=if dead then gs_lives-1 else gs_lives
         in gs{gs_shown=s',gs_lives=d'}
       
---drawChar :: GraphicsData -> (Char,(Int,Int)) -> IO()
---drawChar GraphicsData{gd_font,gd_mainSurf} (c,(x,y))=do
---         let r = Just (SDL.Rect x y 10 10)
---         txtS<-TTF.renderUTF8Solid gd_font [c] (SDL.Color 255 255 255)
---         SDL.blitSurface txtS Nothing gd_mainSurf r
---         SDL.freeSurface txtS
---   
---drawScore :: GraphicsData -> GameState -> IO()
---drawScore GraphicsData{gd_font,gd_mainSurf} GameState{gs_score,gs_lives}=do
---        let half= (div width 2)
---        let r1 = Just (SDL.Rect 0 0 half 10)
---        let r2 = Just (SDL.Rect (half+1) 0 half 10)
---        txtS1<-TTF.renderUTF8Solid gd_font ("Lives:" ++ (show gs_lives) ++ "/" ++ (show lives)) (SDL.Color 255 20 20)
---        SDL.blitSurface txtS1 Nothing gd_mainSurf r1
---        SDL.freeSurface txtS1
---        txtS2<-TTF.renderUTF8Solid gd_font ("Score:" ++ show gs_score) (SDL.Color 255 20 20)
---        SDL.blitSurface txtS2 Nothing gd_mainSurf r2
---        SDL.freeSurface txtS2
---     
---gameOver :: GraphicsData -> GameState -> IO()
---gameOver GraphicsData{gd_font,gd_mainSurf} GameState{gs_score}=do
---        let halfH=(div height 2)
---        let halfW=(div width 2)
---        let x=halfW-40
---        let r1 = Just (SDL.Rect x (halfH-20) 200 10)
---        let r2 = Just (SDL.Rect x (halfH+10) 200 10)
---        txtS1<-TTF.renderUTF8Solid gd_font ("Game Over!") (SDL.Color 255 20 20)
---        SDL.blitSurface txtS1 Nothing gd_mainSurf r1
---        SDL.freeSurface txtS1
---        txtS2<-TTF.renderUTF8Solid gd_font ("Score:" ++ show gs_score) (SDL.Color 255 20 20)
---        SDL.blitSurface txtS2 Nothing gd_mainSurf r2
---        SDL.freeSurface txtS2
---        
+        
 width :: Int        
 width = 640
     
