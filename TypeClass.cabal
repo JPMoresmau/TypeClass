@@ -10,7 +10,7 @@ category:       Game
 license:        BSD3
 license-file:   LICENSE
 data-files:     font/FreeSansBold.ttf
-  
+
 executable TypeClass
   hs-source-dirs:  src
   main-is:         Main.hs
@@ -24,7 +24,8 @@ executable TypeClass
                    containers,
                    filepath,
                    reactive-banana,
-                   reactive-banana-sdl >= 0.1.2
+                   reactive-banana-sdl >= 0.1.2,
+                   transformers >=0.3.0 && <0.4
   includes: SDL.h
 
   

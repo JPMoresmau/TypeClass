@@ -15,6 +15,8 @@ import System.Random
 import System.FilePath
 
 import Paths_TypeClass
+import Control.Monad.IO.Class (liftIO)
+import Reactive.Banana.Frameworks (actuate, Frameworks)
 
 main :: IO()
 main = do
@@ -25,8 +27,7 @@ main = do
         runSDLPump sdlES
         endGraphics gd
 
-setupNetwork :: forall t.
-                               SDLEventSource -> GraphicsData -> NetworkDescription t ()
+setupNetwork :: Frameworks t=> SDLEventSource -> GraphicsData -> Moment t ()
 setupNetwork es gd=do
         r<-liftIO getStdGen
         eTickDiff <- tickDiffEvent es
@@ -45,11 +46,11 @@ setupNetwork es gd=do
                 bScreen = pure (gd_mainSurf gd)
                          
                 -- | game state update event
-                eGSChange :: Event t (GameState -> GameState)                
+                --eGSChange :: Frameworks t=> Event t (GameState -> GameState)                
                 eGSChange= union (updateGS <$> eTickDiff) (updateGSOnKey <$> keyDownEvent esdl)
                 
                 -- | game state behavior
-                bGameState :: Behavior t GameState
+                --bGameState :: Frameworks t=> Behavior t GameState
                 bGameState=accumB gsInitial eGSChange
                 
                 -- | draw lives
