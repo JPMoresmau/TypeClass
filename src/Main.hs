@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables  #-}
+-- | a little typing game, demonstrating some reactive-banana-SDL code
 module Main where
 
 import qualified Graphics.UI.SDL as SDL
@@ -19,15 +20,23 @@ import Control.Monad.IO.Class (liftIO)
 import Reactive.Banana.Frameworks (actuate, Frameworks)
 import Control.Monad (void)
 
+-- | entry point of the application
 main :: IO()
 main = do
+        -- SDL event source
         sdlES<-getSDLEventSource
+        -- call initializtion
         gd<-liftIO initGraphics
+        -- get network
         network <- compile $ setupNetwork sdlES gd
+        -- actuate
         actuate network
+        -- run SDL loop
         runSDLPump sdlES
+        -- clean up
         endGraphics gd
 
+-- | setup the FRP
 setupNetwork :: Frameworks t=> SDLEventSource -> GraphicsData -> Moment t ()
 setupNetwork es gd=do
         r<-liftIO getStdGen
@@ -100,20 +109,20 @@ updateGS d gs1=let
 
 -- | graphics info
 data GraphicsData = GraphicsData {
-        gd_font :: TTF.Font
-        , gd_mainSurf :: SDL.Surface
+        gd_font :: TTF.Font -- ^ font for text
+        , gd_mainSurf :: SDL.Surface -- ^ surface to draw on
         }
  
 -- | gamestate
 data GameState = GameState {
-        gs_moves :: Int
-        , gs_movespeed :: Int
-        , gs_newspeed :: Int
-        , gs_shown :: M.Map Char (Int,Int)
-        , gs_rand :: StdGen
-        , gs_score :: Int
-        , gs_score_beforespeed :: Int
-        , gs_lives :: Int
+        gs_moves :: Int -- ^ number of ticks
+        , gs_movespeed :: Int -- ^ speed at which letters fall
+        , gs_newspeed :: Int -- ^ speed at which letters appear
+        , gs_shown :: M.Map Char (Int,Int) -- ^ letters shown on screen with their position
+        , gs_rand :: StdGen -- ^ random generator
+        , gs_score :: Int -- ^ score
+        , gs_score_beforespeed :: Int -- ^ score before last speedup
+        , gs_lives :: Int -- ^ number of lives left
         } 
  
 -- | apply the function if the first argument evaluates to true 
@@ -151,28 +160,35 @@ moveDown gs@GameState{gs_shown,gs_lives}=let
         d'=if dead then gs_lives-1 else gs_lives
         in gs{gs_shown=s',gs_lives=d'}
       
-        
+-- | width of window        
 width :: Int        
 width = 640
     
+-- | height of window
 height :: Int        
 height =  480
 
+-- | half width
 halfW :: Int
 halfW= div width 2
 
+-- | half height
 halfH :: Int 
 halfH=div height 2
 
+-- | start number of lives
 lives :: Int
 lives = 3
 
+-- | red color
 red :: SDL.Color
 red = SDL.Color 255 20 20
 
+-- | black color
 black :: SDL.Color
 black = SDL.Color 0 0 0
 
+-- | white color
 white :: SDL.Color
 white=SDL.Color 255 255 255
 

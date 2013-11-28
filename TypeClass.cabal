@@ -1,6 +1,6 @@
 name:           TypeClass
 version:        0.2.0
-cabal-version:  >= 1.2
+cabal-version:  >= 1.6
 build-type:     Simple
 author:         JP Moresmau
 maintainer:     jpmoresmau@gmail.com
@@ -10,6 +10,7 @@ category:       Game
 license:        BSD3
 license-file:   LICENSE
 data-files:     font/FreeSansBold.ttf
+extra-source-files: README.md
 
 executable TypeClass
   hs-source-dirs:  src
@@ -28,4 +29,6 @@ executable TypeClass
                    transformers >=0.3.0 && <0.4
   includes: SDL.h
 
-  
+Source-Repository head
+    Type:            git
+    Location:        https://github.com/JPMoresmau/TypeClass  
