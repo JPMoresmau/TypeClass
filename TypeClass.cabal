@@ -1,5 +1,5 @@
 name:           TypeClass
-version:        0.2.0
+version:        0.2.1
 cabal-version:  >= 1.6
 build-type:     Simple
 author:         JP Moresmau
@@ -25,7 +25,7 @@ executable TypeClass
                    containers,
                    filepath,
                    reactive-banana,
-                   reactive-banana-sdl >= 0.1.2,
+                   reactive-banana-sdl >= 0.2.0,
                    transformers >=0.3.0 && <0.4
   includes: SDL.h
 
